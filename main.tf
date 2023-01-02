@@ -61,8 +61,8 @@ resource "vault_github_auth_backend" "default" {
 }
 
 resource "vault_github_team" "default" {
-  for_each = local.config.org_team_policy_mapping
-  backend  = vault_github_auth_backend[each.value.auth_mount_path].id
+  for_each = { for mapping in local.config.org_team_policy_mapping : mapping.github_team => mapping}
+  backend  = vault_github_auth_backend[mapping.auth_mount_path].path
   team     = each.value.github_team
   policies = [vault_policy[each.value.github_team].name]
 }
