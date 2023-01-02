@@ -4,11 +4,11 @@ locals {
 
     backends = [
 
-      {
-        github_organization = "GlueOps"
-        auth_mount_path     = "glueops/github"
-        tune = null
-      },
+      # {
+      #   github_organization = "GlueOps"
+      #   auth_mount_path     = "glueops/github"
+      #   tune = null
+      # },
       {
         github_organization = "glueops-rocks"
         auth_mount_path     = "github"
