@@ -12,7 +12,7 @@ locals {
       {
         github_organization = "glueops-rocks"
         auth_mount_path     = "github"
-        tune = map({
+        tune = tomap({
           allowed_response_headers     = []
           audit_non_hmac_request_keys  = []
           audit_non_hmac_response_keys = []
