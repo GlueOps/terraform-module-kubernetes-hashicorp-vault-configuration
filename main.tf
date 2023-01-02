@@ -12,7 +12,7 @@ locals {
       {
         github_organization = "glueops-rocks"
         auth_mount_path     = "github"
-        tune = {
+        tune = toset({
           allowed_response_headers     = []
           audit_non_hmac_request_keys  = []
           audit_non_hmac_response_keys = []
@@ -21,7 +21,7 @@ locals {
           max_lease_ttl                = "768h"
           passthrough_request_headers  = []
           token_type                   = "default-service"
-        }
+        })
       }
     ]
     org_team_policy_mapping = [
