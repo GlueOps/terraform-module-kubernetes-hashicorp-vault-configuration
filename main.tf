@@ -7,7 +7,7 @@ locals {
       {
         github_organization = "GlueOps"
         auth_mount_path     = "glueops/github"
-        tune = {}
+        tune = null
       },
       {
         github_organization = "glueops-rocks"
