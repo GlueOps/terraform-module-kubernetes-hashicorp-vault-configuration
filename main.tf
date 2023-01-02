@@ -69,6 +69,7 @@ resource "vault_github_auth_backend" "default" {
     passthrough_request_headers  = []
     token_type                   = "default-service"
 }
+}
 
 resource "vault_github_team" "default" {
   for_each = { for mapping in local.config.org_team_policy_mapping : mapping.github_team => mapping}
