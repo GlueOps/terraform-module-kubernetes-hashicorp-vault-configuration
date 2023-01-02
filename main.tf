@@ -58,17 +58,7 @@ resource "vault_github_auth_backend" "default" {
   for_each     = { for backend in local.config.backends : backend.auth_mount_path => backend}
   organization = each.value.github_organization
   path         = each.value.auth_mount_path
-  // define tune using value from local.config.backends if it exists, otherwise use the default tune
-  tune = each.value.tune != null ? each.value.tune : {
-    allowed_response_headers     = []
-    audit_non_hmac_request_keys  = []
-    audit_non_hmac_response_keys = []
-    default_lease_ttl            = "768h"
-    listing_visibility           = "unauth"
-    max_lease_ttl                = "768h"
-    passthrough_request_headers  = []
-    token_type                   = "default-service"
-}
+
 }
 
 resource "vault_github_team" "default" {
