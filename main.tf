@@ -54,7 +54,7 @@ locals {
 }
 
 resource "vault_github_auth_backend" "default" {
-  for_each     = local.config.backends
+  for_each     = toset(local.config.backends)
   organization = each.value.github_organization
   path         = each.value.auth_mount_path
   tune         = each.value.tune ? each.value.tune : {}
