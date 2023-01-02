@@ -12,7 +12,7 @@ locals {
       {
         github_organization = "glueops-rocks"
         auth_mount_path     = "github"
-        tune = [{
+        tune = {
           allowed_response_headers     = []
           audit_non_hmac_request_keys  = []
           audit_non_hmac_response_keys = []
@@ -21,7 +21,7 @@ locals {
           max_lease_ttl                = "768h"
           passthrough_request_headers  = []
           token_type                   = "default-service"
-        }]
+        }
       }
     ]
     org_team_policy_mapping = [
@@ -58,7 +58,7 @@ resource "vault_github_auth_backend" "default" {
   for_each     = { for backend in local.config.backends : backend.auth_mount_path => backend}
   organization = each.value.github_organization
   path         = each.value.auth_mount_path
-  tune         = each.value.tune[0]
+  tune         = object(each.value.tune)
 
 }
 
