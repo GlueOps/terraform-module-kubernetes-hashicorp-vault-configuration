@@ -1,75 +1,47 @@
-locals {
-  config = {
 
-
-    backends = [
-
-      {
-        github_organization = "GlueOps"
-        auth_mount_path     = "glueops/github"
-        tune                = []
-      },
-      {
-        github_organization = "glueops-rocks"
-        auth_mount_path     = "github"
-        tune = [{
-          allowed_response_headers     = []
-          audit_non_hmac_request_keys  = []
-          audit_non_hmac_response_keys = []
-          default_lease_ttl            = "768h"
-          listing_visibility           = "unauth"
-          max_lease_ttl                = "768h"
-          passthrough_request_headers  = []
-          token_type                   = "default-service"
-        }]
-      }
-    ]
-    org_team_policy_mapping = [
-      {
-        auth_mount_path = "glueops/github"
-        github_team     = "vault_super_admins"
-        policy          = <<EOT
-                          path "*" {
-                          capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-                          }
-                          EOT
-
-      },
-      {
-        auth_mount_path = "github"
-        github_team     = "developers"
-        policy          = <<EOF
-                          path "secret/*" {
-                            capabilities = ["create", "read", "update", "delete", "list"]
-                          }
-
-                          path "/cubbyhole/*" {
-                            capabilities = ["deny"]
-                          }
-                          EOF
-      }
-    ]
-
-  }
-
+variable "backends" {
+  type = list(object({
+    github_organization = string
+    auth_mount_path     = string
+    tune                = list(object({
+      allowed_response_headers     = list(string)
+      audit_non_hmac_request_keys  = list(string)
+      audit_non_hmac_response_keys = list(string)
+      default_lease_ttl            = string
+      listing_visibility           = string
+      max_lease_ttl                = string
+      passthrough_request_headers  = list(string)
+      token_type                   = string
+    }))
+  }))
 }
 
+variable "org_team_policy_mapping" {
+  type = list(object({
+    auth_mount_path = string
+    github_team     = string
+    policy          = string
+  }))
+}
+
+
+
 resource "vault_github_auth_backend" "default" {
-  for_each     = { for backend in local.config.backends : backend.auth_mount_path => backend }
+  for_each     = { for backend in var.backends : backend.auth_mount_path => backend }
   organization = each.value.github_organization
   path         = each.value.auth_mount_path
   tune         = each.value.tune
 }
 
 resource "vault_github_team" "default" {
-  for_each = { for mapping in local.config.org_team_policy_mapping : mapping.github_team => mapping }
+  for_each = { for mapping in var.org_team_policy_mapping : mapping.github_team => mapping }
   backend  = vault_github_auth_backend.default[each.value.auth_mount_path].path
   team     = each.value.github_team
   policies = [vault_policy.default[each.value.github_team].name]
 }
 
 resource "vault_policy" "default" {
-  for_each = { for mapping in local.config.org_team_policy_mapping : mapping.github_team => mapping }
+  for_each = { for mapping in var.org_team_policy_mapping : mapping.github_team => mapping }
   name     = each.value.github_team
   policy   = each.value.policy
 }
