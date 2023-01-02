@@ -53,11 +53,12 @@ locals {
 
 }
 
+// for each local.config.backends, create a vault_github_auth_backend resource with the organization and path specified in the map and the tune specified in the map if it exists (otherwise, use the default tune) 
 resource "vault_github_auth_backend" "default" {
   for_each     = toset(local.config.backends)
-  organization = each.value.github_organization
-  path         = each.value.auth_mount_path
-  tune         = each.value.tune ? each.value.tune : {}
+  organization = local.config.backends[each.key].github_organization
+  path         = local.config.backends[each.key].auth_mount_path
+  tune         = local.config.backends[each.key].tune ? local.config.backends[each.key].tune : {}
 }
 
 resource "vault_github_team" "default" {
