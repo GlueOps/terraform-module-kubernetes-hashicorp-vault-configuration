@@ -7,7 +7,7 @@ locals {
       {
         github_organization = "GlueOps"
         auth_mount_path     = "glueops/github"
-        tune = []
+        tune                = []
       },
       {
         github_organization = "glueops-rocks"
@@ -53,24 +53,23 @@ locals {
   }
 
 }
-// loop through each backend in local.config.backends and create a vault_github_auth_backend resource with the organization and path specified in the map and the tune specified in the map if it exists (otherwise, use the default tune)
+
 resource "vault_github_auth_backend" "default" {
-  for_each     = { for backend in local.config.backends : backend.auth_mount_path => backend}
+  for_each     = { for backend in local.config.backends : backend.auth_mount_path => backend }
   organization = each.value.github_organization
   path         = each.value.auth_mount_path
   tune         = each.value.tune
-
 }
 
 resource "vault_github_team" "default" {
-  for_each = { for mapping in local.config.org_team_policy_mapping : mapping.github_team => mapping}
+  for_each = { for mapping in local.config.org_team_policy_mapping : mapping.github_team => mapping }
   backend  = vault_github_auth_backend.default[each.value.auth_mount_path].path
   team     = each.value.github_team
   policies = [vault_policy.default[each.value.github_team].name]
 }
 
 resource "vault_policy" "default" {
-  for_each = { for mapping in local.config.org_team_policy_mapping : mapping.github_team => mapping}
+  for_each = { for mapping in local.config.org_team_policy_mapping : mapping.github_team => mapping }
   name     = each.value.github_team
   policy   = each.value.policy
 }
