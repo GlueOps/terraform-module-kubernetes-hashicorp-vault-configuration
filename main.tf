@@ -1,17 +1,3 @@
-variable "CUSTOMER_GITHUB_ORG_NAME" {
-  type        = string
-  description = "The name of the GitHub organization that will be used for authentication"
-}
-
-variable "CUSTOMER_GITHUB_ORG_TEAM_NAME" {
-  type        = string
-  description = "The name of the GitHub team that will be used for authentication"
-}
-
-
-
-
-
 locals {
   config = {
 
