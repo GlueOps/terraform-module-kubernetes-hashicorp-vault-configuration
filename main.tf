@@ -174,4 +174,23 @@ resource "vault_mount" "secrets_kvv2" {
   type        = "kv-v2"
   description = "KV Version 2 secrets mount"
 }
- 
+
+
+resource "vault_kubernetes_auth_backend_role" "vault_backup" {
+  backend                          = vault_auth_backend.kubernetes.path
+  role_name                        = "vault-backup-role"
+  bound_service_account_names      = ["vault-backup"]
+  bound_service_account_namespaces = ["glueops-core-backup"]
+  token_ttl                        = 3600
+  token_policies                   = [vault_policy.vault_backup.name]
+}
+
+resource "vault_policy" "vault_backup" {
+  name = "vault-backup"
+
+  policy = <<EOF
+    path "sys/storage/raft/snapshot" {
+    capabilities = ["read"]
+  }
+EOF
+}
