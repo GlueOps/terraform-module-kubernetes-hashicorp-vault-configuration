@@ -3,7 +3,7 @@ variable "backends" {
   type = list(object({
     github_organization = string
     auth_mount_path     = string
-    tune                = list(object({
+    tune = list(object({
       allowed_response_headers     = list(string)
       audit_non_hmac_request_keys  = list(string)
       audit_non_hmac_response_keys = list(string)
