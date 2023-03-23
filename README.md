@@ -73,13 +73,13 @@ vault_configurations = {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_vault"></a> [vault](#requirement\_vault) | 3.13.0 |
+| <a name="requirement_vault"></a> [vault](#requirement\_vault) | 3.14.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_vault"></a> [vault](#provider\_vault) | 3.13.0 |
+| <a name="provider_vault"></a> [vault](#provider\_vault) | 3.14.0 |
 
 ## Modules
 
@@ -89,17 +89,17 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [vault_auth_backend.kubernetes](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/auth_backend) | resource |
-| [vault_github_auth_backend.default](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/github_auth_backend) | resource |
-| [vault_github_team.default](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/github_team) | resource |
-| [vault_kubernetes_auth_backend_config.config](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/kubernetes_auth_backend_config) | resource |
-| [vault_kubernetes_auth_backend_role.env_roles](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/kubernetes_auth_backend_role) | resource |
-| [vault_kubernetes_auth_backend_role.vault_backup](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/kubernetes_auth_backend_role) | resource |
-| [vault_mount.secrets_kvv2](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/mount) | resource |
-| [vault_policy.admin](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/policy) | resource |
-| [vault_policy.default](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/policy) | resource |
-| [vault_policy.read_all_env_specific_secrets](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/policy) | resource |
-| [vault_policy.vault_backup](https://registry.terraform.io/providers/hashicorp/vault/3.13.0/docs/resources/policy) | resource |
+| [vault_auth_backend.kubernetes](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/auth_backend) | resource |
+| [vault_github_auth_backend.default](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/github_auth_backend) | resource |
+| [vault_github_team.default](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/github_team) | resource |
+| [vault_kubernetes_auth_backend_config.config](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/kubernetes_auth_backend_config) | resource |
+| [vault_kubernetes_auth_backend_role.env_roles](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/kubernetes_auth_backend_role) | resource |
+| [vault_kubernetes_auth_backend_role.vault_backup](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/kubernetes_auth_backend_role) | resource |
+| [vault_mount.secrets_kvv2](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/mount) | resource |
+| [vault_policy.admin](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/policy) | resource |
+| [vault_policy.default](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/policy) | resource |
+| [vault_policy.read_all_env_specific_secrets](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/policy) | resource |
+| [vault_policy.vault_backup](https://registry.terraform.io/providers/hashicorp/vault/3.14.0/docs/resources/policy) | resource |
 
 ## Inputs
 
