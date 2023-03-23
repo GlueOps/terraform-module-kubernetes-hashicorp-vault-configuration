@@ -6,7 +6,6 @@ This Terraform module configures vault for kvv2 usage. This repo should be used 
 ## Prerequisites
 
 Assume you have just deployed <https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-initialization> and still have the SSL cert in a environment variable and connection to vault running via `kubectl port-forward`
-
 ### Example of the configurations expected by this module
 
 ```hcl
