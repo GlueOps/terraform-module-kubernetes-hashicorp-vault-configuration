@@ -1,14 +1,14 @@
 resource "vault_policy" "editor" {
   name   = "editor"
   policy = <<EOF
-                        path "secret/*" {
-                          capabilities = ["create", "read", "update", "delete", "list"]
-                        }
+    path "secret/*" {
+      capabilities = ["create", "read", "update", "delete", "list"]
+    }
 
-                        path "/cubbyhole/*" {
-                          capabilities = ["deny"]
-                        }
-                        EOF
+    path "/cubbyhole/*" {
+      capabilities = ["deny"]
+    }
+    EOF
 }
 
 resource "vault_policy" "super_admin" {
@@ -26,8 +26,12 @@ resource "vault_policy" "reader" {
   policy = <<EOF
     path "secret/*" {
     capabilities = ["read"]
-  }
-EOF
+    }
+    
+    path "/cubbyhole/*" {
+      capabilities = ["deny"]
+    }
+    EOF
 }
 
 resource "vault_policy" "admin" {
