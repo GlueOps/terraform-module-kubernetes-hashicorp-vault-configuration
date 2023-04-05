@@ -34,7 +34,7 @@ resource "vault_jwt_auth_backend" "default" {
   oidc_client_secret = var.oidc_client_secret
   bound_issuer       = "https://dex.${var.captain_domain}"
   description        = "Vault authentication method OIDC"
-  path               = "odic"
+  path               = "oidc"
   type               = "oidc"
 
   tune {
