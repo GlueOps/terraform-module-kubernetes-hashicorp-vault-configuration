@@ -37,7 +37,7 @@ resource "vault_jwt_auth_backend" "default" {
 resource "vault_jwt_auth_backend_role" "default" {
   for_each    = { for mapping in var.org_team_policy_mapping : mapping.oidc_group => mapping }
   backend     = vault_jwt_auth_backend.default.path
-  role_name   = "admin"
+  role_name   = concat(each.value.policy_name,replace(each.value.oidc_group, ":", "-"))
   role_type   = "oidc"
   user_claim  = "email"
   oidc_scopes = ["openid", "profile", "email", "groups"]
