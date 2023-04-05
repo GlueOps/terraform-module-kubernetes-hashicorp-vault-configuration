@@ -5,6 +5,17 @@ variable "org_team_policy_mapping" {
   }))
 }
 
+variable "captain_domain" {
+  type        = string
+  description = "OIDC Discovery URL"
+  nullable    = false
+}
+
+variable "oidc_client_secret" {
+  type        = string
+  description = "OIDC client secret"
+  nullable    = false
+}
 
 resource "vault_jwt_auth_backend" "default" {
   oidc_discovery_url = "https://dex.${var.captain_domain}"
