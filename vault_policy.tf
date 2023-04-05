@@ -1,5 +1,5 @@
 resource "vault_policy" "editor" {
-  name   = "reader_and_writer"
+  name   = "editor"
   policy = <<EOF
                         path "secret/*" {
                           capabilities = ["create", "read", "update", "delete", "list"]
@@ -20,7 +20,7 @@ resource "vault_policy" "super_admin" {
     EOF
 }
 
-resource "vault_policy" "read_all_env_specific_secrets" {
+resource "vault_policy" "reader" {
   name = "reader"
 
   policy = <<EOF
