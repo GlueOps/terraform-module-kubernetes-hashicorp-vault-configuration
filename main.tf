@@ -8,13 +8,13 @@ variable "org_team_policy_mappings" {
 
 variable "captain_domain" {
   type        = string
-  description = "OIDC Discovery URL"
+  description = "Captain Domain for the cluster"
   nullable    = false
 }
 
 variable "oidc_client_secret" {
   type        = string
-  description = "OIDC client secret"
+  description = "This is the dex client secret for the 'vault' ClientID"
   nullable    = false
 }
 
@@ -24,7 +24,7 @@ resource "vault_jwt_auth_backend" "default" {
   oidc_client_secret = var.oidc_client_secret
   bound_issuer       = "https://dex.${var.captain_domain}"
   description        = "Vault authentication method OIDC"
-  path               = "oidc"
+  path               = "GitHub"
   type               = "oidc"
 
   tune {
