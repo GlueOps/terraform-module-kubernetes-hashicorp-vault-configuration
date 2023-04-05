@@ -45,23 +45,6 @@ resource "vault_jwt_auth_backend" "default" {
   }
 }
 
-# resource "vault_jwt_auth_backend_role" "default" {
-#   for_each    = { for mapping in var.org_team_policy_mapping : mapping.oidc_group => mapping }
-#   backend     = vault_jwt_auth_backend.default.path
-#   role_name = format("%s-%s", each.value.policy_name, replace(each.value.oidc_group, ":", "-"))
-#   role_type   = "oidc"
-#   user_claim  = "email"
-#   oidc_scopes = ["openid", "profile", "email", "groups"]
-#   bound_claims = {
-#     "groups" = each.value.oidc_group
-#   }
-#   token_policies = [each.value.policy_name]
-
-#   # Add the allowed_redirect_uris attribute
-#   allowed_redirect_uris = ["https://vault.${var.captain_domain}/ui/vault/auth/oidc/oidc/callback"] # Replace with your Vault instance's callback URL
-# }
-
-
 resource "vault_jwt_auth_backend_role" "default" {
   for_each = { for idx, mapping in var.org_team_policy_mappings : idx => mapping }
 
