@@ -1,4 +1,4 @@
-resource "vault_policy" "developer" {
+resource "vault_policy" "editor" {
   name   = "reader_and_writer"
   policy = <<EOF
                         path "secret/*" {
