@@ -52,7 +52,7 @@ resource "vault_jwt_auth_backend" "default" {
 
 
 resource "vault_jwt_auth_backend_role" "default" {
-  for_each = { for idx, mapping in var.org_team_policy_mapping : idx => mapping }
+  for_each = { for idx, mapping in var.org_team_policy_mappings : idx => mapping }
 
   backend     = vault_jwt_auth_backend.default.path
   role_name   = each.value.policy_name
