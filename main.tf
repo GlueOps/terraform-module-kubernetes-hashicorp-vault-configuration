@@ -102,7 +102,7 @@ resource "vault_kubernetes_auth_backend_role" "env_roles" {
   bound_service_account_names      = ["*"]
   bound_service_account_namespaces = ["*"]
   token_ttl                        = 3600
-  token_policies                   = [vault_policy.read_all_env_specific_secrets.name]
+  token_policies                   = [vault_policy.reader.name]
 }
 
 resource "vault_mount" "secrets_kvv2" {
