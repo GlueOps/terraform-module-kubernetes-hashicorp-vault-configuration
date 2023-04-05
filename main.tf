@@ -1,49 +1,64 @@
-
-variable "backends" {
+variable "org_team_policy_mappings" {
   type = list(object({
-    github_organization = string
-    auth_mount_path     = string
-    tune = list(object({
-      allowed_response_headers     = list(string)
-      audit_non_hmac_request_keys  = list(string)
-      audit_non_hmac_response_keys = list(string)
-      default_lease_ttl            = string
-      listing_visibility           = string
-      max_lease_ttl                = string
-      passthrough_request_headers  = list(string)
-      token_type                   = string
-    }))
+    policy_name = string
+    oidc_groups = list(string)
   }))
+  description = "Each OIDC group should be in the format of GITHUB_ORG_NAME:GITHUB_TEAM_NAME and the policy name should be either 'reader' or 'editor'"
+  default = [
+    {
+      policy_name = "reader"
+      oidc_groups = ["example-org:team1", "example-org:team2"]
+    },
+    {
+      policy_name = "editor"
+      oidc_groups = ["example-org:team1", "example-org:team3"]
+    }
+  ]
 }
 
-variable "org_team_policy_mapping" {
-  type = list(object({
-    auth_mount_path = string
-    github_team     = string
-    policy          = string
-  }))
+variable "captain_domain" {
+  type        = string
+  description = "Captain Domain for the cluster"
+  nullable    = false
 }
 
-
-
-resource "vault_github_auth_backend" "default" {
-  for_each     = { for backend in var.backends : backend.auth_mount_path => backend }
-  organization = each.value.github_organization
-  path         = each.value.auth_mount_path
-  tune         = each.value.tune
+variable "oidc_client_secret" {
+  type        = string
+  description = "This is the dex client secret for the 'vault' ClientID"
+  nullable    = false
 }
 
-resource "vault_github_team" "default" {
-  for_each = { for mapping in var.org_team_policy_mapping : mapping.github_team => mapping }
-  backend  = vault_github_auth_backend.default[each.value.auth_mount_path].path
-  team     = each.value.github_team
-  policies = [vault_policy.default[each.value.github_team].name]
+resource "vault_jwt_auth_backend" "default" {
+  oidc_discovery_url = "https://dex.${var.captain_domain}"
+  oidc_client_id     = "vault"
+  oidc_client_secret = var.oidc_client_secret
+  bound_issuer       = "https://dex.${var.captain_domain}"
+  description        = "Vault authentication method OIDC"
+  path               = "oidc"
+  type               = "oidc"
+
+  tune {
+    listing_visibility = "unauth"
+    token_type         = "default-service"
+    max_lease_ttl      = "768h"
+    default_lease_ttl  = "768h"
+  }
 }
 
-resource "vault_policy" "default" {
-  for_each = { for mapping in var.org_team_policy_mapping : mapping.github_team => mapping }
-  name     = each.value.github_team
-  policy   = each.value.policy
+resource "vault_jwt_auth_backend_role" "default" {
+  for_each = { for idx, mapping in var.org_team_policy_mappings : idx => mapping }
+
+  backend     = vault_jwt_auth_backend.default.path
+  role_name   = each.value.policy_name
+  role_type   = "oidc"
+  user_claim  = "email"
+  oidc_scopes = ["openid", "profile", "email", "groups"]
+
+  bound_claims = {
+    "groups" = join(",", each.value.oidc_groups) # Join the groups using a comma (or another delimiter of your choice)
+  }
+  token_policies        = [each.value.policy_name]
+  allowed_redirect_uris = ["https://vault.${var.captain_domain}/ui/vault/auth/oidc/oidc/callback"] # Replace with your Vault instance's callback URL
 }
 
 
@@ -54,80 +69,6 @@ resource "vault_policy" "default" {
 provider "vault" {
   address = jsondecode(file("../vault_access.json")).vault_address
   token   = jsondecode(file("../vault_access.json")).root_token
-}
-
-
-
-resource "vault_policy" "admin" {
-  name = "admin"
-
-  policy = <<EOF
-    # Read system health check
-    path "sys/health"
-    {
-      capabilities = ["read", "sudo"]
-    }
-
-    # Create and manage ACL policies broadly across Vault
-
-    # List existing policies
-    path "sys/policies/acl"
-    {
-      capabilities = ["list"]
-    }
-
-    # Create and manage ACL policies
-    path "sys/policies/acl/*"
-    {
-      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-    }
-
-    # Enable and manage authentication methods broadly across Vault
-
-    # Manage auth methods broadly across Vault
-    path "auth/*"
-    {
-      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-    }
-
-    # Create, update, and delete auth methods
-    path "sys/auth/*"
-    {
-      capabilities = ["create", "update", "delete", "sudo"]
-    }
-
-    # List auth methods
-    path "sys/auth"
-    {
-      capabilities = ["read"]
-    }
-
-    # Enable and manage the key/value secrets engine at `secret/` path
-
-    # List, create, update, and delete key/value secrets
-    path "secret/*"
-    {
-      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-    }
-
-    # Manage secrets engines
-    path "sys/mounts/*"
-    {
-      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-    }
-
-    # List existing secrets engines.
-    path "sys/mounts"
-    {
-      capabilities = ["read"]
-    }
-
-    # Disable misleading cubbyhole, the path with broad access
-    path "/cubbyhole/*" {
-      capabilities = ["deny"]
-    }
-    EOF
-
 }
 
 
@@ -155,22 +96,11 @@ resource "vault_kubernetes_auth_backend_role" "env_roles" {
   bound_service_account_names      = ["*"]
   bound_service_account_namespaces = ["*"]
   token_ttl                        = 3600
-  token_policies                   = [vault_policy.read_all_env_specific_secrets.name]
-}
-
-
-resource "vault_policy" "read_all_env_specific_secrets" {
-  name = "secrets-reader"
-
-  policy = <<EOF
-    path "secret/*" {
-    capabilities = ["read"]
-  }
-EOF
+  token_policies                   = [vault_policy.reader.name]
 }
 
 resource "vault_mount" "secrets_kvv2" {
-  path        = "secret/kv-v2-glueops"
+  path        = "secret"
   type        = "kv-v2"
   description = "KV Version 2 secrets mount"
 }
@@ -185,12 +115,3 @@ resource "vault_kubernetes_auth_backend_role" "vault_backup" {
   token_policies                   = [vault_policy.vault_backup.name]
 }
 
-resource "vault_policy" "vault_backup" {
-  name = "vault-backup"
-
-  policy = <<EOF
-    path "sys/storage/raft/snapshot" {
-    capabilities = ["read"]
-  }
-EOF
-}
