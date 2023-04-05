@@ -61,9 +61,8 @@ resource "vault_jwt_auth_backend_role" "default" {
   oidc_scopes = ["openid", "profile", "email", "groups"]
 
   bound_claims = {
-    "groups" = each.value.oidc_groups
+    "groups" = join(",", each.value.oidc_groups) # Join the groups using a comma (or another delimiter of your choice)
   }
-
   token_policies        = [each.value.policy_name]
   allowed_redirect_uris = ["https://vault.${var.captain_domain}/ui/vault/auth/oidc/oidc/callback"] # Replace with your Vault instance's callback URL
 }
