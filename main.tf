@@ -2,6 +2,7 @@ variable "org_team_policy_mappings" {
   type = list(object({
     policy_name = string
     oidc_groups = list(string)
+    description = "Each OIDC group should be in the format of 'GITHUB_ORG_NAME:GITHUB_TEAM_NAME' and the policy name should be either 'reader' or 'editor'"
   }))
 }
 
