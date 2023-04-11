@@ -1,18 +1,24 @@
 <!-- BEGIN_TF_DOCS -->
 # terraform-module-kubernetes-hashicorp-vault-configuration
 
-This Terraform module configures vault for kvv2 usage. This repo should be used in the context of deploying with an [admiral](https://github.com/glueops/admiral) and after you have [initialized](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-initialization) the vault cluster
+This terraform module is to help you configure a vault cluster for use with OIDC Authentication and KV Secrets Engine Version 2. This module is part of the opionated GlueOps Platform. If you came here directly then you should probably visit https://github.com/glueops/admiral as that is the starting point.
 
 ## Prerequisites
 
-Assume you have just deployed <https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-initialization> and still have the SSL cert in a environment variable and connection to vault running via `kubectl port-forward`
+- You need an unsealed vault cluster.
+- You need an OIDC client secret that matches what you defined in your deployment of the Platform helm chart (`dex.vault.client_secret`)
+- You need a connection to the vault cluster using `kubctl` port forwarding.
+- You need to ignore self-signed SSL errors
 
-### Example of the configurations expected by this module
+For more details see: https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/wiki
+
+### Example usage of module
 
 ```hcl
-vault_configurations = {
-  oidc_client_secret = "yolo1234"
-  captain_domain     = "nonprod.antoniostacos.onglueops.rocks"
+module "initialize_vault_cluster" {
+  source = "git::https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration.git"
+  oidc_client_secret       = "yuS5eWskhW1ifc8R1ffgU+RARS3XM4TCKLEVO9rcXAA="
+  captain_domain           = "nonprod.antoniostacos.onglueops.rocks"
   org_team_policy_mappings = [
     {
       oidc_groups = ["GlueOps:vault_super_admins"]
