@@ -15,7 +15,7 @@ For more details see: https://github.com/GlueOps/terraform-module-kubernetes-has
 ### Example usage of module
 
 ```hcl
-module "initialize_vault_cluster" {
+module "configure_vault_cluster" {
   source = "git::https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration.git"
   oidc_client_secret       = "yuS5eWskhW1ifc8R1ffgU+RARS3XM4TCKLEVO9rcXAA="
   captain_domain           = "nonprod.antoniostacos.onglueops.rocks"
