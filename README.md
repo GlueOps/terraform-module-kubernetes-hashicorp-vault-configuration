@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # terraform-module-kubernetes-hashicorp-vault-configuration
 
-This Terraform module configures vault for kvv2 usage. This repo should be used in the context of deploying with an [admiral](https://github.com/glueops/admiral) and after you have [initialized](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-initialization) the vault cluster
+This terraform module is to help you finish configuring a brandnew but unsealed vault cluster. This is part of the opionated GlueOps Platform. If you came here directly then you should probably visit https://github.com/glueops/admiral as that is the start point.
 
 ## Prerequisites
 
