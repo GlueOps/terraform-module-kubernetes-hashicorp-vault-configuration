@@ -62,10 +62,9 @@ resource "vault_jwt_auth_backend_role" "default" {
 }
 
 
-
 data "aws_s3_bucket_object" "vault_access" {
-  bucket = 
-  key    = "vault_access.json"
+  bucket = var.aws_s3_bucket_name
+  key    = var.aws_s3_key_vault_secret_file
 }
 
 

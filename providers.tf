@@ -26,6 +26,12 @@ variable "aws_s3_bucket_name" {
   nullable    = false
 }
 
+variable "aws_s3_key_vault_secret_file" {
+  description = "The full key path to the s3 bucket file that contains the vault access information. Do not include S3://BUCKET_NAME/ in the path."
+  type        = string
+  nullable    = false
+}
+
 provider "aws" {
   region     = var.region
   access_key = var.aws_access_key
