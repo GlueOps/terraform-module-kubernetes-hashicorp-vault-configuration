@@ -73,12 +73,6 @@ provider "vault" {
   token   = jsondecode(data.aws_s3_bucket_object.vault_access.body).root_token
 }
 
-
-
-
-
-
-
 resource "vault_auth_backend" "kubernetes" {
   type = "kubernetes"
 }
