@@ -70,7 +70,7 @@ data "aws_s3_object" "vault_access" {
 
 provider "vault" {
   address = "https://127.0.0.1:8200"
-  token   = jsondecode(data.aws_s3_bucket_object.vault_access.body).root_token
+  token   = jsondecode(data.aws_s3_object.vault_access.body).root_token
 }
 
 resource "vault_auth_backend" "kubernetes" {
