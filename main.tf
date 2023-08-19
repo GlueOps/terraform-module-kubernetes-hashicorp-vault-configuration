@@ -62,20 +62,16 @@ resource "vault_jwt_auth_backend_role" "default" {
 }
 
 
-
-
-
-
-provider "vault" {
-  address = jsondecode(file("../vault_access.json")).vault_address
-  token   = jsondecode(file("../vault_access.json")).root_token
+data "aws_s3_object" "vault_access" {
+  bucket = var.aws_s3_bucket_name
+  key    = var.aws_s3_key_vault_secret_file
 }
 
 
-
-
-
-
+provider "vault" {
+  address = "https://127.0.0.1:8200"
+  token   = jsondecode(data.aws_s3_object.vault_access.body).root_token
+}
 
 resource "vault_auth_backend" "kubernetes" {
   type = "kubernetes"
@@ -114,4 +110,3 @@ resource "vault_kubernetes_auth_backend_role" "vault_backup" {
   token_ttl                        = 3600
   token_policies                   = [vault_policy.vault_backup.name]
 }
-
