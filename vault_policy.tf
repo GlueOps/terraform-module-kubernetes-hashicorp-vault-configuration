@@ -25,7 +25,7 @@ resource "vault_policy" "reader" {
 
   policy = <<EOF
     path "secret/*" {
-    capabilities = ["read"]
+    capabilities = ["read", "list"]
     }
     
     path "/cubbyhole/*" {
