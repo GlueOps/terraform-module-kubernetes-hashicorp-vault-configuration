@@ -9,6 +9,10 @@ resource "vault_policy" "editor" {
       capabilities = ["deny"]
     }
 
+    path "sys/mounts" {
+      capabilities = ["deny"]
+    }
+
     path "sys/mounts/*" {
       capabilities = ["deny"]
     }
