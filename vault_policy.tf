@@ -8,6 +8,11 @@ resource "vault_policy" "editor" {
     path "/cubbyhole/*" {
       capabilities = ["deny"]
     }
+
+    path "sys/mounts/*" {
+      capabilities = ["deny"]
+    }
+
     EOF
 }
 
