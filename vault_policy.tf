@@ -40,6 +40,15 @@ resource "vault_policy" "reader" {
     path "/cubbyhole/*" {
       capabilities = ["deny"]
     }
+
+    path "sys/mounts" {
+      capabilities = ["deny"]
+    }
+
+    path "sys/mounts/*" {
+      capabilities = ["deny"]
+    }
+
     EOF
 }
 
