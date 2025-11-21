@@ -186,8 +186,8 @@ resource "vault_token_auth_backend_role" "service_account" {
   disallowed_policies    = ["admin", "super_admin"]
   
   # Token security settings
-  orphan                 = false  # Maintains parent-child relationship for revocation
+  orphan                 = false   # Maintains parent-child relationship for revocation
   renewable              = true
-  token_period           = "24h"  # Must renew every 24 hours
-  token_explicit_max_ttl = "720h" # 30 days absolute maximum lifetime
+  token_period           = 86400   # 24 hours in seconds (must renew every 24 hours)
+  token_explicit_max_ttl = 2592000 # 30 days in seconds (absolute maximum lifetime)
 }
