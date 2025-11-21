@@ -5,23 +5,53 @@ resource "vault_policy" "editor" {
       capabilities = ["create", "read", "update", "delete", "list"]
     }
 
-    path "/cubbyhole/*" {
-      capabilities = ["deny"]
+    # Service account token creation (restricted to reader/editor policies only)
+    path "auth/token/create/service-account" {
+      capabilities = ["create", "update"]
     }
 
-    # Can renew own token
+    # Can read the service-account role definition
+    path "auth/token/roles/service-account" {
+      capabilities = ["read"]
+    }
+
+    # Can list available token roles
+    path "auth/token/roles" {
+      capabilities = ["list"]
+    }
+
+    # Self-service token management
     path "auth/token/renew-self" {
       capabilities = ["update"]
     }
     
-    # Can look up own token info
     path "auth/token/lookup-self" {
       capabilities = ["read"]
     }
     
-    # Can revoke own token if needed
     path "auth/token/revoke-self" {
       capabilities = ["update"]
+    }
+
+    # Manage service tokens created via the role
+    path "auth/token/lookup" {
+      capabilities = ["update"]
+    }
+
+    path "auth/token/renew" {
+      capabilities = ["update"]
+    }
+
+    path "auth/token/renew/*" {
+      capabilities = ["update"]
+    }
+
+    path "auth/token/revoke/*" {
+      capabilities = ["update"]
+    }
+
+    path "/cubbyhole/*" {
+      capabilities = ["deny"]
     }
     EOF
 }
@@ -43,6 +73,19 @@ resource "vault_policy" "reader" {
     capabilities = ["read", "list"]
     }
     
+    # Self-service token management
+    path "auth/token/renew-self" {
+      capabilities = ["update"]
+    }
+    
+    path "auth/token/lookup-self" {
+      capabilities = ["read"]
+    }
+    
+    path "auth/token/revoke-self" {
+      capabilities = ["update"]
+    }
+
     path "/cubbyhole/*" {
       capabilities = ["deny"]
     }
@@ -129,4 +172,22 @@ resource "vault_policy" "vault_backup" {
     capabilities = ["read"]
   }
 EOF
+}
+
+# Service account token role - restricted to reader/editor policies only
+# This allows editors to create renewable service account tokens without privilege escalation risk
+resource "vault_token_auth_backend_role" "service_account" {
+  role_name              = "service-account"
+  
+  # SECURITY: Can ONLY create tokens with reader or editor policies
+  allowed_policies       = ["reader", "editor"]
+  
+  # SECURITY: Explicitly block privilege escalation
+  disallowed_policies    = ["admin", "super_admin"]
+  
+  # Token security settings
+  orphan                 = false  # Maintains parent-child relationship for revocation
+  renewable              = true
+  token_period           = "24h"  # Must renew every 24 hours
+  token_explicit_max_ttl = "720h" # 30 days absolute maximum lifetime
 }
