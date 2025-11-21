@@ -8,6 +8,21 @@ resource "vault_policy" "editor" {
     path "/cubbyhole/*" {
       capabilities = ["deny"]
     }
+
+    # Can renew own token
+    path "auth/token/renew-self" {
+      capabilities = ["update"]
+    }
+    
+    # Can look up own token info
+    path "auth/token/lookup-self" {
+      capabilities = ["read"]
+    }
+    
+    # Can revoke own token if needed
+    path "auth/token/revoke-self" {
+      capabilities = ["update"]
+    }
     EOF
 }
 
