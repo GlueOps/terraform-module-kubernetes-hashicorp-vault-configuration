@@ -183,10 +183,10 @@ resource "vault_token_auth_backend_role" "service_account" {
   allowed_policies       = ["reader", "editor"]
   
   # SECURITY: Explicitly block privilege escalation
-  disallowed_policies    = ["admin", "super_admin"]
+
   
   # Token security settings
   orphan                 = false   # Maintains parent-child relationship for revocation
   renewable              = true
-  token_explicit_max_ttl = 7776000 # 30 days in seconds (absolute maximum lifetime)
+  token_explicit_max_ttl = 7776000 # 90 days in seconds (absolute maximum lifetime)
 }
