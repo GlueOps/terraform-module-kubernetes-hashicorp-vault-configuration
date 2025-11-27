@@ -20,6 +20,21 @@ resource "vault_policy" "editor" {
       capabilities = ["list"]
     }
 
+    # List token accessors (to view all tokens)
+    path "auth/token/accessors" {
+      capabilities = ["list", "sudo"]
+    }
+
+    # Lookup tokens by accessor
+    path "auth/token/lookup-accessor" {
+      capabilities = ["update"]
+    }
+
+    # Revoke tokens by accessor
+    path "auth/token/revoke-accessor" {
+      capabilities = ["update"]
+    }
+
     # Self-service token management
     path "auth/token/renew-self" {
       capabilities = ["update"]
@@ -30,23 +45,6 @@ resource "vault_policy" "editor" {
     }
     
     path "auth/token/revoke-self" {
-      capabilities = ["update"]
-    }
-
-    # Manage service tokens created via the role
-    path "auth/token/lookup" {
-      capabilities = ["update"]
-    }
-
-    path "auth/token/renew" {
-      capabilities = ["update"]
-    }
-
-    path "auth/token/renew/*" {
-      capabilities = ["update"]
-    }
-
-    path "auth/token/revoke/*" {
       capabilities = ["update"]
     }
 
@@ -186,7 +184,7 @@ resource "vault_token_auth_backend_role" "service_account" {
 
   
   # Token security settings
-  orphan                 = false   # Maintains parent-child relationship for revocation
+  orphan                 = true    # Service tokens survive parent (OIDC) token expiration
   renewable              = true
   token_explicit_max_ttl = 7776000 # 90 days in seconds (absolute maximum lifetime)
 }
