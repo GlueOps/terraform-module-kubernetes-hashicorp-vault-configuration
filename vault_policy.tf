@@ -20,11 +20,6 @@ resource "vault_policy" "editor" {
       capabilities = ["list"]
     }
 
-    # List token accessors (to view all tokens)
-    path "auth/token/accessors" {
-      capabilities = ["list", "sudo"]
-    }
-
     # Lookup tokens by accessor
     path "auth/token/lookup-accessor" {
       capabilities = ["update"]
