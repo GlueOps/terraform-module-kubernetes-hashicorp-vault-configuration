@@ -183,5 +183,4 @@ resource "vault_token_auth_backend_role" "service_account" {
   # Token security settings
   orphan                 = true    # Service tokens survive parent (OIDC) token expiration
   renewable              = true
-  token_explicit_max_ttl = 7776000 # 90 days in seconds (absolute maximum lifetime)
 }
