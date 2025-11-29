@@ -35,6 +35,11 @@ resource "vault_policy" "editor" {
       capabilities = ["update"]
     }
 
+    # Renew tokens by accessor
+    path "auth/token/renew-accessor" {
+      capabilities = ["update"]
+    }
+
     # Self-service token management
     path "auth/token/renew-self" {
       capabilities = ["update"]
@@ -179,9 +184,6 @@ resource "vault_token_auth_backend_role" "service_account" {
   
   # SECURITY: Can ONLY create tokens with reader or editor policies
   allowed_policies       = ["reader", "editor"]
-  
-  # SECURITY: Explicitly block privilege escalation
-
   
   # Token security settings
   orphan                 = true    # Service tokens survive parent (OIDC) token expiration
