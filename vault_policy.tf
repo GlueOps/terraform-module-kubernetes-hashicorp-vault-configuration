@@ -175,12 +175,12 @@ EOF
 # Service account token role - restricted to reader/editor policies only
 # This allows editors to create renewable service account tokens without privilege escalation risk
 resource "vault_token_auth_backend_role" "service_account" {
-  role_name              = "service-account"
-  
+  role_name = "service-account"
+
   # SECURITY: Can ONLY create tokens with reader or editor policies
-  allowed_policies       = ["reader", "editor"]
-  
+  allowed_policies = ["reader", "editor"]
+
   # Token security settings
-  orphan                 = true    # Service tokens survive parent (OIDC) token expiration
-  renewable              = true
+  orphan    = true # Service tokens survive parent (OIDC) token expiration
+  renewable = true
 }
