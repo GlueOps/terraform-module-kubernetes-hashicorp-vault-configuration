@@ -5,6 +5,49 @@ resource "vault_policy" "editor" {
       capabilities = ["create", "read", "update", "delete", "list"]
     }
 
+    # Service account token creation (restricted to reader/editor policies only)
+    path "auth/token/create/service-account" {
+      capabilities = ["create", "update"]
+    }
+
+    # Can read the service-account role definition
+    path "auth/token/roles/service-account" {
+      capabilities = ["read"]
+    }
+
+    # Can list available token roles
+    path "auth/token/roles" {
+      capabilities = ["list"]
+    }
+
+    # Lookup tokens by accessor
+    path "auth/token/lookup-accessor" {
+      capabilities = ["update"]
+    }
+
+    # Revoke tokens by accessor
+    path "auth/token/revoke-accessor" {
+      capabilities = ["update"]
+    }
+
+    # Renew tokens by accessor
+    path "auth/token/renew-accessor" {
+      capabilities = ["update"]
+    }
+
+    # Self-service token management
+    path "auth/token/renew-self" {
+      capabilities = ["update"]
+    }
+    
+    path "auth/token/lookup-self" {
+      capabilities = ["read"]
+    }
+    
+    path "auth/token/revoke-self" {
+      capabilities = ["update"]
+    }
+
     path "/cubbyhole/*" {
       capabilities = ["deny"]
     }
@@ -28,6 +71,19 @@ resource "vault_policy" "reader" {
     capabilities = ["read", "list"]
     }
     
+    # Self-service token management
+    path "auth/token/renew-self" {
+      capabilities = ["update"]
+    }
+    
+    path "auth/token/lookup-self" {
+      capabilities = ["read"]
+    }
+    
+    path "auth/token/revoke-self" {
+      capabilities = ["update"]
+    }
+
     path "/cubbyhole/*" {
       capabilities = ["deny"]
     }
@@ -114,4 +170,17 @@ resource "vault_policy" "vault_backup" {
     capabilities = ["read"]
   }
 EOF
+}
+
+# Service account token role - restricted to reader/editor policies only
+# This allows editors to create renewable service account tokens without privilege escalation risk
+resource "vault_token_auth_backend_role" "service_account" {
+  role_name = "service-account"
+
+  # SECURITY: Can ONLY create tokens with reader or editor policies
+  allowed_policies = ["reader", "editor"]
+
+  # Token security settings
+  orphan    = true # Service tokens survive parent (OIDC) token expiration
+  renewable = true
 }
