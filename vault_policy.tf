@@ -71,6 +71,10 @@ resource "vault_policy" "updater" {
       capabilities = ["create", "update", "patch", "list"]
     }
 
+    path "secret/subkeys/*" {
+      capabilities = ["read"]
+    }
+
     path "auth/token/renew-self" {
       capabilities = ["update"]
     }
