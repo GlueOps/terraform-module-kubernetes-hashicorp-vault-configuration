@@ -36,6 +36,7 @@ resource "vault_jwt_auth_backend" "default" {
   description        = "Vault authentication method OIDC"
   path               = "oidc"
   type               = "oidc"
+  default_role       = "reader"
 
   tune {
     listing_visibility = "unauth"
