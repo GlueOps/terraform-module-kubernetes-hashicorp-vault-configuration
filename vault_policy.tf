@@ -63,6 +63,32 @@ resource "vault_policy" "super_admin" {
     EOF
 }
 
+resource "vault_policy" "updater" {
+  name = "updater"
+
+  policy = <<EOF
+    path "secret/*" {
+      capabilities = ["create", "update", "patch", "list"]
+    }
+
+    path "auth/token/renew-self" {
+      capabilities = ["update"]
+    }
+
+    path "auth/token/lookup-self" {
+      capabilities = ["read"]
+    }
+
+    path "auth/token/revoke-self" {
+      capabilities = ["update"]
+    }
+
+    path "/cubbyhole/*" {
+      capabilities = ["deny"]
+    }
+  EOF
+}
+
 resource "vault_policy" "reader" {
   name = "reader"
 
