@@ -28,6 +28,10 @@ module "configure_vault_cluster" {
     {
       oidc_groups = ["GlueOps:vault_super_admins", "glueops-rocks:developers"]
       policy_name = "reader"
+    },
+    {
+      oidc_groups = ["GlueOps:vault_super_admins", "glueops-rocks:developers"]
+      policy_name = "updater"
     }
   ]
 }
@@ -39,6 +43,7 @@ module "configure_vault_cluster" {
 |-------------|--------------------------------------|
 | reader      | read all secrets                     |
 | editor      | read/write/delete/update all secrets |
+| updater     | create/list/update all secrets       |
 
 ## Requirements
 
