@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.12.1...v0.12.2) (2026-07-31)
+
+
+### Miscellaneous Chores
+
+* add Apache-2.0 LICENSE ([#58](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/issues/58)) ([a417d81](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/commit/a417d818788a50d3fb9cfab545d0596a82a2383a))
+
 ## [0.12.1](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.12.0...v0.12.1) (2026-07-07)
 
 
