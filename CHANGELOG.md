@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.12.2...v0.13.0) (2026-08-27)
+
+
+### Features
+
+* trigger new release ([#64](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/issues/64)) ([5cc2a72](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/commit/5cc2a72e2df70ac772cf2e9548f0f5687c804ae6))
+
 ## [0.12.2](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.12.1...v0.12.2) (2026-07-31)
 
 
