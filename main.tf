@@ -69,17 +69,40 @@ resource "vault_jwt_auth_backend_role" "default" {
   allowed_redirect_uris = ["https://vault.${var.captain_domain}/ui/vault/auth/oidc/oidc/callback"] # Replace with your Vault instance's callback URL
 }
 
-# CLI counterparts of the roles above. The oidc roles drive the browser flow and
-# are what the web UI uses; these accept a Dex id_token posted straight to
-# auth/oidc/login, so the CLI needs no browser, no loopback listener and no
+# A second auth mount for the CLI, so its roles can keep the same names as the
+# policies they grant. Role names are unique per mount, and reader/editor on the
+# oidc mount are already taken by the browser-flow roles the web UI logs in
+# through - sharing the mount would have meant mangled names like "reader-jwt",
+# leaking an implementation detail into what operators type.
+#
+# type "jwt" validates a token that is presented directly, with no redirect flow,
+# so it needs no client credentials - only somewhere to fetch Dex's public keys.
+resource "vault_jwt_auth_backend" "cli" {
+  path               = "jwt"
+  type               = "jwt"
+  oidc_discovery_url = "https://dex.${var.captain_domain}"
+  bound_issuer       = "https://dex.${var.captain_domain}"
+  description        = "Token-based authentication for CLI clients"
+
+  tune {
+    listing_visibility = "unauth"
+    token_type         = "default-service"
+    max_lease_ttl      = "768h"
+    default_lease_ttl  = "768h"
+  }
+}
+
+# CLI counterparts of the oidc roles above. Those drive the browser flow and are
+# what the web UI uses; these accept a Dex id_token posted straight to
+# auth/jwt/login, so the CLI needs no browser, no loopback listener and no
 # redirect URI - which is what makes it work from a machine whose browser lives
 # somewhere else. Same group bindings and same policy: only the way the identity
 # is presented differs.
 resource "vault_jwt_auth_backend_role" "cli" {
   for_each = { for idx, mapping in var.org_team_policy_mappings : idx => mapping }
 
-  backend    = vault_jwt_auth_backend.default.path
-  role_name  = "${each.value.policy_name}-jwt"
+  backend    = vault_jwt_auth_backend.cli.path
+  role_name  = each.value.policy_name
   role_type  = "jwt"
   user_claim = "email"
 
