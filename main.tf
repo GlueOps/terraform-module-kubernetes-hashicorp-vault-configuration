@@ -28,13 +28,6 @@ variable "oidc_client_secret" {
   nullable    = false
 }
 
-variable "cli_audience" {
-  type        = string
-  description = "Dex client ID whose id_tokens the CLI roles accept, matched against the token's `aud` claim. Must be a client operators can obtain a token for."
-  default     = "toolbox"
-  nullable    = false
-}
-
 resource "vault_jwt_auth_backend" "default" {
   oidc_discovery_url = "https://dex.${var.captain_domain}"
   oidc_client_id     = "vault"
@@ -106,7 +99,9 @@ resource "vault_jwt_auth_backend_role" "cli" {
   role_type  = "jwt"
   user_claim = "email"
 
-  bound_audiences = [var.cli_audience]
+  # "toolbox" is the public Dex client developers mint edge tokens from
+  # (defined in platform-helm-chart-platform); the same token authenticates here.
+  bound_audiences = ["toolbox"]
 
   bound_claims = {
     "groups" = join(",", each.value.oidc_groups)
