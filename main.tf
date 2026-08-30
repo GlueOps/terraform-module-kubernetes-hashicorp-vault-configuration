@@ -28,6 +28,13 @@ variable "oidc_client_secret" {
   nullable    = false
 }
 
+variable "cli_audience" {
+  type        = string
+  description = "Dex client ID whose id_tokens the CLI roles accept, matched against the token's `aud` claim. Must be a client operators can obtain a token for."
+  default     = "toolbox"
+  nullable    = false
+}
+
 resource "vault_jwt_auth_backend" "default" {
   oidc_discovery_url = "https://dex.${var.captain_domain}"
   oidc_client_id     = "vault"
@@ -60,6 +67,28 @@ resource "vault_jwt_auth_backend_role" "default" {
   }
   token_policies        = [each.value.policy_name]
   allowed_redirect_uris = ["https://vault.${var.captain_domain}/ui/vault/auth/oidc/oidc/callback"] # Replace with your Vault instance's callback URL
+}
+
+# CLI counterparts of the roles above. The oidc roles drive the browser flow and
+# are what the web UI uses; these accept a Dex id_token posted straight to
+# auth/oidc/login, so the CLI needs no browser, no loopback listener and no
+# redirect URI - which is what makes it work from a machine whose browser lives
+# somewhere else. Same group bindings and same policy: only the way the identity
+# is presented differs.
+resource "vault_jwt_auth_backend_role" "cli" {
+  for_each = { for idx, mapping in var.org_team_policy_mappings : idx => mapping }
+
+  backend    = vault_jwt_auth_backend.default.path
+  role_name  = "${each.value.policy_name}-jwt"
+  role_type  = "jwt"
+  user_claim = "email"
+
+  bound_audiences = [var.cli_audience]
+
+  bound_claims = {
+    "groups" = join(",", each.value.oidc_groups)
+  }
+  token_policies = [each.value.policy_name]
 }
 
 

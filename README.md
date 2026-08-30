@@ -66,6 +66,7 @@ No modules.
 |------|------|
 | [vault_auth_backend.kubernetes](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/auth_backend) | resource |
 | [vault_jwt_auth_backend.default](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/jwt_auth_backend) | resource |
+| [vault_jwt_auth_backend_role.cli](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/jwt_auth_backend_role) | resource |
 | [vault_jwt_auth_backend_role.default](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/jwt_auth_backend_role) | resource |
 | [vault_kubernetes_auth_backend_config.config](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/kubernetes_auth_backend_config) | resource |
 | [vault_kubernetes_auth_backend_role.env_roles](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/kubernetes_auth_backend_role) | resource |
@@ -90,6 +91,7 @@ No modules.
 | <a name="input_aws_s3_key_vault_secret_file"></a> [aws\_s3\_key\_vault\_secret\_file](#input\_aws\_s3\_key\_vault\_secret\_file) | The full key path to the s3 bucket file that contains the vault access information. Do not include S3://BUCKET\_NAME/ in the path. | `string` | n/a | yes |
 | <a name="input_aws_secret_key"></a> [aws\_secret\_key](#input\_aws\_secret\_key) | n/a | `string` | n/a | yes |
 | <a name="input_captain_domain"></a> [captain\_domain](#input\_captain\_domain) | Captain Domain for the cluster | `string` | n/a | yes |
+| <a name="input_cli_audience"></a> [cli\_audience](#input\_cli\_audience) | Dex client ID whose id\_tokens the CLI roles accept, matched against the token's `aud` claim. Must be a client operators can obtain a token for. | `string` | `"toolbox"` | no |
 | <a name="input_oidc_client_secret"></a> [oidc\_client\_secret](#input\_oidc\_client\_secret) | This is the dex client secret for the 'vault' ClientID | `string` | n/a | yes |
 | <a name="input_org_team_policy_mappings"></a> [org\_team\_policy\_mappings](#input\_org\_team\_policy\_mappings) | Each OIDC group should be in the format of GITHUB\_ORG\_NAME:GITHUB\_TEAM\_NAME and the policy name should be either 'reader' or 'editor' | <pre>list(object({<br/>    policy_name = string<br/>    oidc_groups = list(string)<br/>  }))</pre> | <pre>[<br/>  {<br/>    "oidc_groups": [<br/>      "example-org:team1",<br/>      "example-org:team2"<br/>    ],<br/>    "policy_name": "reader"<br/>  },<br/>  {<br/>    "oidc_groups": [<br/>      "example-org:team1",<br/>      "example-org:team3"<br/>    ],<br/>    "policy_name": "editor"<br/>  }<br/>]</pre> | no |
 
