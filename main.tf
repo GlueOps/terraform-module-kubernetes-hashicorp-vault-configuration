@@ -107,6 +107,15 @@ resource "vault_jwt_auth_backend_role" "cli" {
     "groups" = join(",", each.value.oidc_groups)
   }
   token_policies = [each.value.policy_name]
+
+  # Bound to the life of the Dex id_token that attested the identity, rather than
+  # inheriting the mount's 768h default. The OpenBao token is opaque, so unlike a
+  # Dex-issued JWT it is NOT invalidated by restarting Dex -- an operator's only
+  # fast kill switch. Left at the default it would outlive the identity behind it
+  # by a month, off-edge, for anyone who obtained ~/.vault-token. Re-login is
+  # transparent to the CLI, so a short TTL costs nothing.
+  token_ttl     = 86400 # 24h
+  token_max_ttl = 86400 # 24h
 }
 
 
