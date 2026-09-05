@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.14.0...v0.15.0) (2026-09-05)
+
+
+### Features
+
+* add jwt-type roles so the CLI can authenticate with a Dex id_token ([#68](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/issues/68)) ([5b6a72d](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/commit/5b6a72dbda17d3496d5bfeb6e9f920edef42e662))
+
 ## [0.14.0](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.13.0...v0.14.0) (2026-08-27)
 
 
