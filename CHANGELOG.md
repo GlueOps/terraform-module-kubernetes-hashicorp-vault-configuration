@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.15.0...v0.15.1) (2026-09-05)
+
+
+### Bug Fixes
+
+* keep the CLI mount off the unauthenticated UI login page ([#71](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/issues/71)) ([f70a67f](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/commit/f70a67f6784d68321ad0ae08f5a2414b7ff3d2c7))
+
 ## [0.15.0](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.14.0...v0.15.0) (2026-09-05)
 
 
