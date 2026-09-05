@@ -45,6 +45,51 @@ module "configure_vault_cluster" {
 | editor      | read/write/delete/update all secrets |
 | updater     | create/list/update all secrets       |
 
+### CLI access (`auth/jwt`)
+
+The module creates two auth mounts. The Vault web UI logs in through `auth/oidc`,
+the browser redirect flow. CLIs use `auth/jwt`, which validates a Dex `id_token`
+presented directly, so it needs no browser, no loopback listener and no redirect
+URI — which is what makes it work from a remote machine, a container, or over
+SSH. Both mounts carry the same role names and the same policies; only the way
+the identity is presented differs.
+
+Log in with [GlueOps/toolbox](https://github.com/GlueOps/toolbox), which runs the
+Dex device flow and handles the authenticating proxy in front of OpenBao:
+
+```sh
+./toolbox up <captain-domain>          # prints a URL to approve with GitHub
+./toolbox bao kv get secret/my-app
+```
+
+Two things make that the supported path rather than a convenience:
+
+- **`bao login -method=jwt` does not exist.** The OpenBao CLI registers no `jwt`
+  login method — only `oidc`, which is the browser redirect flow — so the command
+  fails with `Unknown auth method` before any network call is made. `toolbox`
+  posts to `/v1/auth/jwt/login` directly instead.
+- **Every request needs a second credential.** `bao` carries its own token in
+  `X-Vault-Token`, but oauth2-proxy at the edge needs an `Authorization: Bearer`
+  header as well. `bao`'s `-header` flag has to sit after the subcommand and
+  before any positional argument, so no shell wrapper can place it reliably;
+  `toolbox` points `BAO_ADDR` at a loopback proxy that attaches it instead.
+
+The roles accept a token minted for the `toolbox` audience with the scopes
+`openid email groups`. `user_claim` reads `email` and `bound_claims` reads
+`groups`, and OpenBao refuses the login if either claim is absent from the token
+— requesting too few scopes fails with `claim "email" not found in token` rather
+than anything naming the scope. The audience has to match the public Dex client
+that [platform-helm-chart-platform](https://github.com/GlueOps/platform-helm-chart-platform)
+creates on every cluster; the two names are not configurable independently.
+
+Tokens issued through this mount last 24h and cannot be renewed past that, so a
+CLI session outlives neither the working day nor the Dex token that attested it.
+To revoke every CLI token at once, without touching web UI sessions:
+
+```sh
+bao token revoke -mode=path auth/jwt
+```
+
 ## Requirements
 
 No requirements.
