@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.2](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.15.1...v0.15.2) (2026-09-05)
+
+
+### Bug Fixes
+
+* set the CLI mount's listing_visibility to "hidden" explicitly ([#73](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/issues/73)) ([adbdfa5](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/commit/adbdfa5b3a1f05799eb10d831aedf16ef21a0bb2))
+
 ## [0.15.1](https://github.com/GlueOps/terraform-module-kubernetes-hashicorp-vault-configuration/compare/v0.15.0...v0.15.1) (2026-09-05)
 
 
