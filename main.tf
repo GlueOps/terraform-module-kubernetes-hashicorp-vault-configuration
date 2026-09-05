@@ -62,6 +62,62 @@ resource "vault_jwt_auth_backend_role" "default" {
   allowed_redirect_uris = ["https://vault.${var.captain_domain}/ui/vault/auth/oidc/oidc/callback"] # Replace with your Vault instance's callback URL
 }
 
+# A second auth mount for the CLI, so its roles can keep the same names as the
+# policies they grant. Role names are unique per mount, and reader/editor on the
+# oidc mount are already taken by the browser-flow roles the web UI logs in
+# through - sharing the mount would have meant mangled names like "reader-jwt",
+# leaking an implementation detail into what operators type.
+#
+# type "jwt" validates a token that is presented directly, with no redirect flow,
+# so it needs no client credentials - only somewhere to fetch Dex's public keys.
+resource "vault_jwt_auth_backend" "cli" {
+  path               = "jwt"
+  type               = "jwt"
+  oidc_discovery_url = "https://dex.${var.captain_domain}"
+  bound_issuer       = "https://dex.${var.captain_domain}"
+  description        = "Token-based authentication for CLI clients"
+
+  tune {
+    listing_visibility = "unauth"
+    token_type         = "default-service"
+    max_lease_ttl      = "768h"
+    default_lease_ttl  = "768h"
+  }
+}
+
+# CLI counterparts of the oidc roles above. Those drive the browser flow and are
+# what the web UI uses; these accept a Dex id_token posted straight to
+# auth/jwt/login, so the CLI needs no browser, no loopback listener and no
+# redirect URI - which is what makes it work from a machine whose browser lives
+# somewhere else. Same group bindings and same policy: only the way the identity
+# is presented differs.
+resource "vault_jwt_auth_backend_role" "cli" {
+  for_each = { for idx, mapping in var.org_team_policy_mappings : idx => mapping }
+
+  backend    = vault_jwt_auth_backend.cli.path
+  role_name  = each.value.policy_name
+  role_type  = "jwt"
+  user_claim = "email"
+
+  # "toolbox" is the public Dex client developers mint edge tokens from
+  # (defined in platform-helm-chart-platform); the same token authenticates here.
+  bound_audiences = ["toolbox"]
+
+  bound_claims = {
+    "groups" = join(",", each.value.oidc_groups)
+  }
+  token_policies = [each.value.policy_name]
+
+  # Bound to the life of the Dex id_token that attested the identity, rather than
+  # inheriting the mount's 768h default. The OpenBao token is opaque, so unlike a
+  # Dex-issued JWT it is NOT invalidated by restarting Dex -- an operator's only
+  # fast kill switch. Left at the default it would outlive the identity behind it
+  # by a month, off-edge, for anyone who obtained ~/.vault-token. Re-login is
+  # transparent to the CLI, so a short TTL costs nothing.
+  token_ttl     = 86400 # 24h
+  token_max_ttl = 86400 # 24h
+}
+
 
 data "aws_s3_object" "vault_access" {
   bucket = var.aws_s3_bucket_name
