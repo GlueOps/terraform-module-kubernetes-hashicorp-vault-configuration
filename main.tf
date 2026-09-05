@@ -77,11 +77,15 @@ resource "vault_jwt_auth_backend" "cli" {
   bound_issuer       = "https://dex.${var.captain_domain}"
   description        = "Token-based authentication for CLI clients"
 
+  # No listing_visibility here, unlike the oidc mount: this one must NOT appear on
+  # the unauthenticated web UI login page. A browser user who picks it is prompted
+  # for a role name and a raw JWT, which is not something they have -- the mount
+  # exists for CLIs that POST a token to /v1/auth/jwt/login. Omitting it also stops
+  # auth/jwt being anonymously enumerable through sys/internal/ui/mounts.
   tune {
-    listing_visibility = "unauth"
-    token_type         = "default-service"
-    max_lease_ttl      = "768h"
-    default_lease_ttl  = "768h"
+    token_type        = "default-service"
+    max_lease_ttl     = "768h"
+    default_lease_ttl = "768h"
   }
 }
 
